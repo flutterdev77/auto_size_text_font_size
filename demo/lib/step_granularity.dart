@@ -48,6 +48,7 @@ class StepGranularityDemo extends StatelessWidget {
                         minFontSize: 10,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 4,
+                        onFontSizeChange: (_) {},
                       )
                     : AutoSizeText.rich(
                         spanFromString(input),
@@ -56,6 +57,7 @@ class StepGranularityDemo extends StatelessWidget {
                         minFontSize: 10,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 4,
+                        onFontSizeChange: (_) {},
                       ),
               ),
             ),

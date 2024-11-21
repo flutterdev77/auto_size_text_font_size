@@ -18,6 +18,7 @@ Widget testWidget({required double width1, required double width2}) {
               minFontSize: 1,
               maxLines: 1,
               group: group,
+              onFontSizeChange: (_){},
             ),
           ),
           SizedBox(
@@ -29,6 +30,7 @@ Widget testWidget({required double width1, required double width2}) {
               minFontSize: 1,
               maxLines: 1,
               group: group,
+              onFontSizeChange: (_){},
             ),
           ),
         ],

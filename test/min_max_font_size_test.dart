@@ -12,6 +12,7 @@ void main() {
         'AutoSizeText Test',
         style: TextStyle(fontSize: 25),
         minFontSize: -1,
+        onFontSizeChange: (_){},
       ),
     );
     expect(tester.takeException(), isAssertionError);
@@ -21,6 +22,7 @@ void main() {
         'AutoSizeText Test',
         style: TextStyle(fontSize: 25),
         maxFontSize: 0,
+        onFontSizeChange: (_){},
       ),
     );
     expect(tester.takeException(), isAssertionError);
@@ -31,6 +33,7 @@ void main() {
         style: TextStyle(fontSize: 25),
         minFontSize: 20,
         maxFontSize: 10,
+        onFontSizeChange: (_){},
       ),
     );
     expect(tester.takeException(), isAssertionError);
@@ -47,6 +50,7 @@ void main() {
           'AutoSizeText Test',
           style: TextStyle(fontSize: 25),
           minFontSize: 15,
+          onFontSizeChange: (_){},
         ),
       ),
     );
@@ -63,6 +67,7 @@ void main() {
           'XXXX',
           style: TextStyle(fontSize: 30, fontFamily: 'Roboto'),
           minFontSize: 15,
+          onFontSizeChange: (_){},
         ),
       ),
     );
@@ -77,6 +82,7 @@ void main() {
         child: AutoSizeText(
           'AutoSizeText Test',
           maxFontSize: 20,
+          onFontSizeChange: (_){},
         ),
       ),
     );
@@ -88,6 +94,7 @@ void main() {
         'AutoSizeText Test',
         style: TextStyle(fontSize: 30),
         maxFontSize: 20,
+        onFontSizeChange: (_){},
       ),
     );
 
@@ -98,6 +105,7 @@ void main() {
         'AutoSizeText Test',
         style: TextStyle(fontSize: 20),
         maxFontSize: 30,
+        onFontSizeChange: (_){},
       ),
     );
   });

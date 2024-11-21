@@ -15,6 +15,7 @@ void main() {
           'XXXXXX',
           overflowReplacement: Text('OVERFLOW!'),
           minFontSize: 20,
+          onFontSizeChange: (_){},
         ),
       ),
     );
@@ -32,6 +33,7 @@ void main() {
           'XXXXX',
           style: TextStyle(fontSize: 20),
           overflowReplacement: Text('OVERFLOW!'),
+          onFontSizeChange: (_){},
         ),
       ),
     );

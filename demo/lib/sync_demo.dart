@@ -69,6 +69,7 @@ class _SyncDemoState extends State<SyncDemo>
                 style: TextStyle(fontSize: 40),
                 stepGranularity: 0.1,
                 maxLines: 3,
+                onFontSizeChange: (_){},
               ),
               replacement: AutoSizeText.rich(
                 spanFromString(text),
@@ -76,6 +77,7 @@ class _SyncDemoState extends State<SyncDemo>
                 style: TextStyle(fontSize: 40),
                 stepGranularity: 0.1,
                 maxLines: 4,
+                onFontSizeChange: (_){},
               ),
             ),
           ),
@@ -100,6 +102,7 @@ class _SyncDemoState extends State<SyncDemo>
                       style: TextStyle(fontSize: 40),
                       stepGranularity: 0.1,
                       maxLines: 3,
+                      onFontSizeChange: (_){},
                     ),
                     replacement: AutoSizeText.rich(
                       spanFromString(text),
@@ -107,6 +110,7 @@ class _SyncDemoState extends State<SyncDemo>
                       style: TextStyle(fontSize: 40),
                       stepGranularity: 0.1,
                       maxLines: 4,
+                      onFontSizeChange: (_){},
                     ),
                   ),
                 ),

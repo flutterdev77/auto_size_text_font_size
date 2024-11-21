@@ -16,6 +16,7 @@ class App extends StatelessWidget {
             height: 140,
             child: AutoSizeText(
               'This string will be automatically resized to fit in two lines.',
+              onFontSizeChange: (_){},
               style: TextStyle(fontSize: 30),
               maxLines: 2,
             ),

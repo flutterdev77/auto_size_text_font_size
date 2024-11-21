@@ -53,6 +53,7 @@ class OverflowReplacementDemo extends StatelessWidget {
                           ),
                         ),
                         maxLines: 4,
+                        onFontSizeChange: (_) {},
                       )
                     : AutoSizeText.rich(
                         spanFromString(input),
@@ -66,6 +67,7 @@ class OverflowReplacementDemo extends StatelessWidget {
                           ),
                         ),
                         maxLines: 4,
+                        onFontSizeChange: (_) {},
                       ),
               ),
             ),

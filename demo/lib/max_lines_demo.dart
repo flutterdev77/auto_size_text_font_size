@@ -40,11 +40,13 @@ class MaxlinesDemo extends StatelessWidget {
                         input,
                         style: TextStyle(fontSize: 30),
                         maxLines: 2,
+                  onFontSizeChange: (_){},
                       )
                     : AutoSizeText.rich(
                         spanFromString(input),
                         style: TextStyle(fontSize: 30),
                         maxLines: 2,
+                  onFontSizeChange: (_){},
                       ),
               ),
             ),

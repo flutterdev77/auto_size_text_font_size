@@ -12,6 +12,7 @@ void main() {
         'XXXXX',
         style: TextStyle(fontSize: 27),
         maxLines: 1,
+        onFontSizeChange: (_){},
       ),
     );
     var height = tester.getSize(find.byType(RichText)).height;
@@ -25,6 +26,7 @@ void main() {
           'XXX XXX',
           style: TextStyle(fontSize: 25),
           maxLines: 2,
+          onFontSizeChange: (_){},
         ),
       ),
     );

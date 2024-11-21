@@ -15,6 +15,7 @@ void main() {
         child: AutoSizeText(
           'XXXXX',
           presetFontSizes: [100, 50, 5],
+          onFontSizeChange: (_){},
         ),
       ),
     );
@@ -28,6 +29,7 @@ void main() {
         child: AutoSizeText(
           'XXXXX',
           presetFontSizes: [100, 50, 5],
+          onFontSizeChange: (_){},
         ),
       ),
     );
@@ -41,6 +43,7 @@ void main() {
         child: AutoSizeText(
           'XXXXX',
           presetFontSizes: [100, 50, 5],
+          onFontSizeChange: (_){},
         ),
       ),
     );

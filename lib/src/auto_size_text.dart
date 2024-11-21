@@ -14,6 +14,7 @@ class AutoSizeText extends StatefulWidget {
   const AutoSizeText(
     String this.data, {
     Key? key,
+    this.onFontSizeChange,
     this.textKey,
     this.style,
     this.strutStyle,
@@ -38,6 +39,7 @@ class AutoSizeText extends StatefulWidget {
   /// Creates a [AutoSizeText] widget with a [TextSpan].
   const AutoSizeText.rich(
     TextSpan this.textSpan, {
+    this.onFontSizeChange,
     Key? key,
     this.textKey,
     this.style,
@@ -59,6 +61,9 @@ class AutoSizeText extends StatefulWidget {
     this.semanticsLabel,
   })  : data = null,
         super(key: key);
+
+  ///Gets the current font size
+  final ValueChanged<double>? onFontSizeChange;
 
   /// Sets the key for the resulting [Text] widget.
   ///
@@ -223,7 +228,6 @@ class _AutoSizeTextState extends State<AutoSizeText> {
   @override
   void initState() {
     super.initState();
-
     widget.group?._register(this);
   }
 
@@ -257,6 +261,10 @@ class _AutoSizeTextState extends State<AutoSizeText> {
       final result = _calculateFontSize(size, style, maxLines);
       final fontSize = result[0] as double;
       final textFits = result[1] as bool;
+
+      if (widget.onFontSizeChange != null) {
+        widget.onFontSizeChange!(fontSize);
+      }
 
       Widget text;
 

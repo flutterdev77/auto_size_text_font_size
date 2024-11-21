@@ -15,6 +15,7 @@ void main() {
           'XXXXX XXXXX',
           style: TextStyle(fontSize: 25),
           wrapWords: false,
+          onFontSizeChange: (_){},
         ),
       ),
     );
@@ -32,6 +33,7 @@ void main() {
           minFontSize: 10,
           maxLines: 10,
           wrapWords: false,
+          onFontSizeChange: (_){},
         ),
       ),
     );
@@ -49,6 +51,7 @@ void main() {
           'XXXXXX',
           style: TextStyle(fontSize: 40),
           maxLines: 2,
+          onFontSizeChange: (_){},
         ),
       ),
     );

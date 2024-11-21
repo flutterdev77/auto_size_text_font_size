@@ -15,6 +15,7 @@ void main() {
           'XXXXX',
           style: TextStyle(fontSize: 60),
           maxLines: 1,
+          onFontSizeChange: (_){},
         ),
       ),
     );
@@ -28,6 +29,7 @@ void main() {
           'XXXXX',
           style: TextStyle(fontSize: 200),
           maxLines: 1,
+          onFontSizeChange: (_){},
         ),
       ),
     );
@@ -42,6 +44,7 @@ void main() {
           style: TextStyle(fontSize: 20),
           maxLines: 1,
           minFontSize: 1,
+          onFontSizeChange: (_){},
         ),
       ),
     );
@@ -55,6 +58,7 @@ void main() {
           'XXXXX XXXXX XXXXX',
           style: TextStyle(fontSize: 30),
           maxLines: 3,
+          onFontSizeChange: (_){},
         ),
       ),
     );
@@ -70,6 +74,7 @@ void main() {
           'XXXXX',
           style: TextStyle(fontSize: 60),
           maxLines: 1,
+          onFontSizeChange: (_){},
         ),
       ),
     );
@@ -84,6 +89,7 @@ void main() {
           'XXXXXX',
           style: TextStyle(fontSize: 200),
           maxLines: 2,
+          onFontSizeChange: (_){},
         ),
       ),
     );
@@ -98,6 +104,7 @@ void main() {
           'XX XX XX',
           style: TextStyle(fontSize: 200),
           maxLines: 3,
+          onFontSizeChange: (_){},
         ),
       ),
     );
@@ -115,6 +122,7 @@ void main() {
           style: TextStyle(fontSize: 33.5),
           maxLines: 1,
           stepGranularity: 1,
+          onFontSizeChange: (_){},
         ),
       ),
     );
@@ -130,6 +138,7 @@ void main() {
           style: TextStyle(fontSize: 33.5),
           maxLines: 1,
           stepGranularity: 1,
+          onFontSizeChange: (_){},
         ),
       ),
     );

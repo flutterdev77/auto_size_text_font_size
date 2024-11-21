@@ -8,14 +8,14 @@ void main() {
   testWidgets('Only Text', (tester) async {
     await pump(
       tester: tester,
-      widget: AutoSizeText('Some Text'),
+      widget: AutoSizeText('Some Text',   onFontSizeChange: (_){},),
     );
   });
 
   testWidgets('Only text (rich)', (tester) async {
     await pump(
       tester: tester,
-      widget: AutoSizeText.rich(TextSpan(text: 'Some Text')),
+      widget: AutoSizeText.rich(TextSpan(text: 'Some Text'),    onFontSizeChange: (_){},),
     );
   });
 
@@ -26,6 +26,7 @@ void main() {
       widget: AutoSizeText(
         'Some Text',
         style: TextStyle(fontSize: 34),
+        onFontSizeChange: (_){},
       ),
     );
   });
@@ -37,6 +38,7 @@ void main() {
       widget: AutoSizeText.rich(
         TextSpan(text: 'Some Text'),
         style: TextStyle(fontSize: 35),
+        onFontSizeChange: (_){},
       ),
     );
   });
@@ -56,6 +58,7 @@ void main() {
         maxLines: 17,
         child: AutoSizeText(
           'AutoSizeText Test',
+          onFontSizeChange: (_){},
         ),
       ),
     );
@@ -77,6 +80,7 @@ void main() {
         'Some Text',
         style: TextStyle(fontSize: 15),
         textScaleFactor: 4,
+        onFontSizeChange: (_){},
       ),
     );
   });
@@ -88,6 +92,7 @@ void main() {
       widget: AutoSizeText(
         'A text with key',
         textKey: textKey,
+        onFontSizeChange: (_){},
       ),
     );
     expect(text.key, textKey);

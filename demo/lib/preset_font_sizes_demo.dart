@@ -44,11 +44,13 @@ class PresetFontSizesDemo extends StatelessWidget {
                         input,
                         presetFontSizes: [40, 20, 14],
                         maxLines: 4,
+                        onFontSizeChange: (_) {},
                       )
                     : AutoSizeText.rich(
                         spanFromString(input),
                         presetFontSizes: [40, 20, 14],
                         maxLines: 4,
+                        onFontSizeChange: (_) {},
                       ),
               ),
             ),

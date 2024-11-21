@@ -47,6 +47,7 @@ class MinFontSizeDemo extends StatelessWidget {
                         minFontSize: 20,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 4,
+                        onFontSizeChange: (_) {},
                       )
                     : AutoSizeText.rich(
                         spanFromString(input),
@@ -54,6 +55,7 @@ class MinFontSizeDemo extends StatelessWidget {
                         minFontSize: 20,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 4,
+                        onFontSizeChange: (_) {},
                       ),
               ),
             ),

@@ -28,6 +28,7 @@ class GroupTestState extends State<GroupTest> {
               minFontSize: 1,
               maxLines: 1,
               group: group,
+              onFontSizeChange: (_){},
             ),
           ),
           SizedBox(
@@ -39,6 +40,7 @@ class GroupTestState extends State<GroupTest> {
               minFontSize: 1,
               maxLines: 1,
               group: group,
+              onFontSizeChange: (_){},
             ),
           ),
         ],
