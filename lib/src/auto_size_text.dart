@@ -6,6 +6,32 @@ part of auto_size_text;
 /// All size constraints as well as maxLines are taken into account. If the text
 /// overflows anyway, you should check if the parent widget actually constraints
 /// the size of this widget.
+
+// Helper class to manage AutoSizeText screenshots globally
+class AutoSizeTextScreenshotManager {
+  // Map to store references to AutoSizeText states
+  static final Map<String, _AutoSizeTextState> _widgetStates = {};
+
+  // Register a widget state with an ID
+  static void registerWidget(String id, _AutoSizeTextState state) {
+    _widgetStates[id] = state;
+  }
+
+  // Unregister a widget state
+  static void unregisterWidget(String id) {
+    _widgetStates.remove(id);
+  }
+
+  // Take screenshot of a specific widget by ID
+  static Future<String> takeScreenshot(String id) async {
+    final state = _widgetStates[id];
+    if (state == null) {
+      throw Exception('No AutoSizeText widget found with ID: $id');
+    }
+    return await state.takeScreenshotAndSave();
+  }
+}
+
 class AutoSizeText extends StatefulWidget {
   /// Creates a [AutoSizeText] widget.
   ///
@@ -14,7 +40,9 @@ class AutoSizeText extends StatefulWidget {
   const AutoSizeText(
     String this.data, {
     Key? key,
+    required this.id,
     this.onFontSizeChange,
+    this.onScreenshotTaken,
     this.textKey,
     this.style,
     this.strutStyle,
@@ -39,8 +67,10 @@ class AutoSizeText extends StatefulWidget {
   /// Creates a [AutoSizeText] widget with a [TextSpan].
   const AutoSizeText.rich(
     TextSpan this.textSpan, {
-    this.onFontSizeChange,
     Key? key,
+    required this.id,
+    this.onFontSizeChange,
+    this.onScreenshotTaken,
     this.textKey,
     this.style,
     this.strutStyle,
@@ -61,6 +91,11 @@ class AutoSizeText extends StatefulWidget {
     this.semanticsLabel,
   })  : data = null,
         super(key: key);
+
+  final String id;
+
+  ///Gets the screenshot path for the given text
+  final ValueChanged<String>? onScreenshotTaken;
 
   ///Gets the current font size
   final ValueChanged<double>? onFontSizeChange;
@@ -220,15 +255,51 @@ class AutoSizeText extends StatefulWidget {
   /// ```
   final String? semanticsLabel;
 
+  static final GlobalKey globalKey = GlobalKey();
+
   @override
   _AutoSizeTextState createState() => _AutoSizeTextState();
 }
 
 class _AutoSizeTextState extends State<AutoSizeText> {
+  final globalKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
     widget.group?._register(this);
+  }
+
+  Future<String> takeScreenshotAndSave() async {
+    try {
+      // Get the render object
+      final boundary =
+          globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+
+      // Convert to image
+      ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+
+      // Convert image to bytes
+      ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
+      Uint8List pngBytes = byteData!.buffer.asUint8List();
+
+      // Get temporary directory
+      final directory = await getTemporaryDirectory();
+
+      // Create file path
+      final imagePath =
+          '${directory.path}/screenshot_${DateTime.now().millisecondsSinceEpoch}.png';
+
+      // Save the file
+      File imgFile = File(imagePath);
+      await imgFile.writeAsBytes(pngBytes);
+
+      return imagePath;
+    } catch (e) {
+      print('Error taking screenshot: $e');
+      return '';
+    }
   }
 
   @override
@@ -276,9 +347,15 @@ class _AutoSizeTextState extends State<AutoSizeText> {
       }
 
       if (widget.overflowReplacement != null && !textFits) {
-        return widget.overflowReplacement!;
+        return RepaintBoundary(
+          key: globalKey,
+          child: widget.overflowReplacement!,
+        );
       } else {
-        return text;
+        return RepaintBoundary(
+          key: globalKey,
+          child: text,
+        );
       }
     });
   }
@@ -458,6 +535,8 @@ class _AutoSizeTextState extends State<AutoSizeText> {
 
   @override
   void dispose() {
+    AutoSizeTextScreenshotManager.unregisterWidget(widget.id);
+
     if (widget.group != null) {
       widget.group!._remove(this);
     }
