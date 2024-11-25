@@ -40,7 +40,7 @@ class AutoSizeText extends StatefulWidget {
   const AutoSizeText(
     String this.data, {
     Key? key,
-    required this.id,
+    this.id,
     this.onFontSizeChange,
     this.onScreenshotTaken,
     this.textKey,
@@ -92,7 +92,7 @@ class AutoSizeText extends StatefulWidget {
   })  : data = null,
         super(key: key);
 
-  final String id;
+  final String? id;
 
   ///Gets the screenshot path for the given text
   final ValueChanged<String>? onScreenshotTaken;
@@ -266,8 +266,11 @@ class _AutoSizeTextState extends State<AutoSizeText> {
 
   @override
   void initState() {
-    super.initState();
+    if (widget.id != null) {
+      AutoSizeTextScreenshotManager.registerWidget(widget.id!, this);
+    }
     widget.group?._register(this);
+    super.initState();
   }
 
   Future<String> takeScreenshotAndSave() async {
@@ -535,7 +538,9 @@ class _AutoSizeTextState extends State<AutoSizeText> {
 
   @override
   void dispose() {
-    AutoSizeTextScreenshotManager.unregisterWidget(widget.id);
+    if (widget.id != null) {
+      AutoSizeTextScreenshotManager.unregisterWidget(widget.id!);
+    }
 
     if (widget.group != null) {
       widget.group!._remove(this);
