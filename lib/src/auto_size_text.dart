@@ -68,7 +68,7 @@ class AutoSizeText extends StatefulWidget {
   const AutoSizeText.rich(
     TextSpan this.textSpan, {
     Key? key,
-    required this.id,
+    this.id,
     this.onFontSizeChange,
     this.onScreenshotTaken,
     this.textKey,
