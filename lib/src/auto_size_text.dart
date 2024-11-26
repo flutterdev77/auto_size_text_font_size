@@ -280,7 +280,7 @@ class _AutoSizeTextState extends State<AutoSizeText> {
           globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
 
       // Convert to image
-      ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+      ui.Image image = await boundary.toImage(pixelRatio: 4.0);
 
       // Convert image to bytes
       ByteData? byteData =
