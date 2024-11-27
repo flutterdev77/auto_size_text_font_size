@@ -22,8 +22,6 @@ class AutoSizeTextScreenshotManager {
     _widgetStates.remove(id);
   }
 
-  static var _errorCount = 0;
-
   // Take screenshot of a specific widget by ID
   static Future<String> takeScreenshot(String id) async {
     try {
@@ -39,13 +37,7 @@ class AutoSizeTextScreenshotManager {
       });
       return completer.future;
     } catch (error, _) {
-      if (_errorCount < 4) {
-        _errorCount = _errorCount + 1;
-        await Future.delayed(Duration(seconds: 1));
-        return takeScreenshot(id);
-      } else {
-        rethrow;
-      }
+      rethrow;
     }
   }
 }
@@ -276,6 +268,7 @@ class AutoSizeText extends StatefulWidget {
 
 class _AutoSizeTextState extends State<AutoSizeText> {
   final globalKey = GlobalKey();
+  bool _isReady = false;
 
   @override
   void initState() {
@@ -283,37 +276,37 @@ class _AutoSizeTextState extends State<AutoSizeText> {
       AutoSizeTextScreenshotManager.registerWidget(widget.id!, this);
     }
     widget.group?._register(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() => _isReady = true);
+    });
     super.initState();
   }
 
   Future<String> takeScreenshotAndSave() async {
+    if (!_isReady) {
+      await Future.delayed(Duration(milliseconds: 100));
+      return takeScreenshotAndSave();
+    }
+
     try {
-      // Get the render object
-      final boundary =
-          globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+      final boundary = globalKey.currentContext?.findRenderObject()
+          as RenderRepaintBoundary?;
+      if (boundary == null) throw Exception('Render boundary not found');
 
-      // Convert to image
-      ui.Image image = await boundary.toImage(pixelRatio: 4.0);
+      final image = await boundary.toImage(pixelRatio: 4.0);
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      if (byteData == null) throw Exception('Failed to get byte data');
 
-      // Convert image to bytes
-      ByteData? byteData =
-          await image.toByteData(format: ui.ImageByteFormat.png);
-      Uint8List pngBytes = byteData!.buffer.asUint8List();
-
-      // Get temporary directory
       final directory = await getTemporaryDirectory();
-
-      // Create file path
       final imagePath =
           '${directory.path}/screenshot_${DateTime.now().millisecondsSinceEpoch}.png';
 
-      // Save the file
-      File imgFile = File(imagePath);
-      await imgFile.writeAsBytes(pngBytes);
+      await File(imagePath).writeAsBytes(byteData.buffer.asUint8List());
+      widget.onScreenshotTaken?.call(imagePath);
 
       return imagePath;
     } catch (e) {
-      print('Error taking screenshot: $e');
+      print('Screenshot error: $e');
       return '';
     }
   }
