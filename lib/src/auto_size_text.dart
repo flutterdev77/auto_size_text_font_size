@@ -41,7 +41,6 @@ class AutoSizeText extends StatefulWidget {
     String this.data, {
     Key? key,
     this.id,
-    this.onFontSizeChange,
     this.onScreenshotTaken,
     this.textKey,
     this.style,
@@ -69,7 +68,6 @@ class AutoSizeText extends StatefulWidget {
     TextSpan this.textSpan, {
     Key? key,
     this.id,
-    this.onFontSizeChange,
     this.onScreenshotTaken,
     this.textKey,
     this.style,
@@ -96,9 +94,6 @@ class AutoSizeText extends StatefulWidget {
 
   ///Gets the screenshot path for the given text
   final ValueChanged<String>? onScreenshotTaken;
-
-  ///Gets the current font size
-  final ValueChanged<double>? onFontSizeChange;
 
   /// Sets the key for the resulting [Text] widget.
   ///
@@ -266,9 +261,6 @@ class _AutoSizeTextState extends State<AutoSizeText> {
 
   @override
   void initState() {
-    if (widget.id != null) {
-      AutoSizeTextScreenshotManager.registerWidget(widget.id!, this);
-    }
     widget.group?._register(this);
     super.initState();
   }
@@ -336,8 +328,8 @@ class _AutoSizeTextState extends State<AutoSizeText> {
       final fontSize = result[0] as double;
       final textFits = result[1] as bool;
 
-      if (widget.onFontSizeChange != null) {
-        widget.onFontSizeChange!(fontSize);
+      if (widget.id != null) {
+        AutoSizeTextScreenshotManager.registerWidget(widget.id!, this);
       }
 
       Widget text;
