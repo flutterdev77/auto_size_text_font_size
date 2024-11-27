@@ -37,7 +37,7 @@ class AutoSizeTextScreenshotManager {
       });
       return completer.future;
     } catch (error, _) {
-      rethrow;
+      return '';
     }
   }
 }
