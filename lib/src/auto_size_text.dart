@@ -22,13 +22,31 @@ class AutoSizeTextScreenshotManager {
     _widgetStates.remove(id);
   }
 
+  static var _errorCount = 0;
+
   // Take screenshot of a specific widget by ID
   static Future<String> takeScreenshot(String id) async {
-    final state = _widgetStates[id];
-    if (state == null) {
-      throw Exception('No AutoSizeText widget found with ID: $id');
+    try {
+      final state = _widgetStates[id];
+      if (state == null) {
+        throw Exception('No AutoSizeText widget found with ID: $id');
+      }
+      var completer = Completer<String>();
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        final path = await state.takeScreenshotAndSave();
+        completer.complete(path);
+        // Take screenshot here
+      });
+      return completer.future;
+    } catch (error, _) {
+      if (_errorCount < 4) {
+        _errorCount = _errorCount + 1;
+        await Future.delayed(Duration(seconds: 1));
+        return takeScreenshot(id);
+      } else {
+        rethrow;
+      }
     }
-    return await state.takeScreenshotAndSave();
   }
 }
 
