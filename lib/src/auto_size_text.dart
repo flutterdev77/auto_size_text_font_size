@@ -261,6 +261,9 @@ class _AutoSizeTextState extends State<AutoSizeText> {
 
   @override
   void initState() {
+    if (widget.id != null) {
+      AutoSizeTextScreenshotManager.registerWidget(widget.id!, this);
+    }
     widget.group?._register(this);
     super.initState();
   }
@@ -327,10 +330,6 @@ class _AutoSizeTextState extends State<AutoSizeText> {
       final result = _calculateFontSize(size, style, maxLines);
       final fontSize = result[0] as double;
       final textFits = result[1] as bool;
-
-      if (widget.id != null) {
-        AutoSizeTextScreenshotManager.registerWidget(widget.id!, this);
-      }
 
       Widget text;
 
@@ -530,10 +529,6 @@ class _AutoSizeTextState extends State<AutoSizeText> {
 
   @override
   void dispose() {
-    if (widget.id != null) {
-      AutoSizeTextScreenshotManager.unregisterWidget(widget.id!);
-    }
-
     if (widget.group != null) {
       widget.group!._remove(this);
     }
