@@ -12,6 +12,9 @@ class AutoSizeTextScreenshotManager {
   // Map to store references to AutoSizeText states
   static final Map<String, _AutoSizeTextState> _widgetStates = {};
 
+  // Map to track pending screenshot operations
+  static final Map<String, Completer<String>> _pendingScreenshots = {};
+
   // Register a widget state with an ID
   static void registerWidget(String id, _AutoSizeTextState state) {
     _widgetStates[id] = state;
@@ -20,25 +23,63 @@ class AutoSizeTextScreenshotManager {
   // Unregister a widget state
   static void unregisterWidget(String id) {
     _widgetStates.remove(id);
+    // Cancel any pending screenshots for this widget
+    _pendingScreenshots.remove(id)?.completeError('Widget disposed');
   }
 
-  // Take screenshot of a specific widget by ID
-  static Future<String> takeScreenshot(String id) async {
+  // Take screenshot of a specific widget by ID with retries
+  static Future<String> takeScreenshot(String id, {int maxRetries = 3}) async {
+    // Check if there's already a pending screenshot for this ID
+    if (_pendingScreenshots.containsKey(id)) {
+      return _pendingScreenshots[id]!.future;
+    }
+
+    final completer = Completer<String>();
+    _pendingScreenshots[id] = completer;
+
     try {
       final state = _widgetStates[id];
       if (state == null) {
-        throw Exception('No AutoSizeText widget found with ID: $id');
+        throw Exception('Widget not found: $id');
       }
-      var completer = Completer<String>();
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        final path = await state.takeScreenshotAndSave();
-        completer.complete(path);
-        // Take screenshot here
-      });
-      return completer.future;
-    } catch (error, _) {
-      return '';
+
+      var attempts = 0;
+      String? result;
+
+      while (attempts < maxRetries && result == null) {
+        try {
+          result = await state.takeScreenshotAndSave();
+        } catch (e) {
+          attempts++;
+          if (attempts >= maxRetries) {
+            throw e;
+          }
+          await Future.delayed(Duration(milliseconds: 100 * attempts));
+        }
+      }
+
+      if (result != null && result.isNotEmpty) {
+        completer.complete(result);
+      } else {
+        throw Exception('Failed to take screenshot after $maxRetries attempts');
+      }
+    } catch (error) {
+      completer.completeError(error);
+    } finally {
+      _pendingScreenshots.remove(id);
     }
+
+    return completer.future;
+  }
+
+  // Clear all pending screenshots
+  static void clearPendingScreenshots() {
+    for (final completer in _pendingScreenshots.values) {
+      if (!completer.isCompleted) {
+        completer.completeError('Operation cancelled');
+      }
+    }
+    _pendingScreenshots.clear();
   }
 }
 
@@ -269,20 +310,33 @@ class AutoSizeText extends StatefulWidget {
 class _AutoSizeTextState extends State<AutoSizeText> {
   final globalKey = GlobalKey();
   bool _isReady = false;
+  bool _isDisposed = false;
+  Timer? _readyTimer;
 
   @override
   void initState() {
+    super.initState();
     if (widget.id != null) {
       AutoSizeTextScreenshotManager.registerWidget(widget.id!, this);
     }
     widget.group?._register(this);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() => _isReady = true);
+    _setupReadyCheck();
+  }
+
+  void _setupReadyCheck() {
+    _readyTimer?.cancel();
+    _readyTimer = Timer(Duration(milliseconds: 50), () {
+      if (!_isDisposed && !_isReady) {
+        setState(() => _isReady = true);
+      }
     });
-    super.initState();
   }
 
   Future<String> takeScreenshotAndSave() async {
+    if (_isDisposed) {
+      throw Exception('Widget is disposed');
+    }
+
     if (!_isReady) {
       await Future.delayed(Duration(milliseconds: 100));
       return takeScreenshotAndSave();
@@ -291,29 +345,45 @@ class _AutoSizeTextState extends State<AutoSizeText> {
     try {
       final boundary = globalKey.currentContext?.findRenderObject()
           as RenderRepaintBoundary?;
-      if (boundary == null) throw Exception('Render boundary not found');
+      if (boundary == null) {
+        throw Exception('Render boundary not found');
+      }
 
       final image = await boundary.toImage(pixelRatio: 4.0);
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-      if (byteData == null) throw Exception('Failed to get byte data');
+      if (byteData == null) {
+        throw Exception('Failed to get byte data');
+      }
 
       final directory = await getTemporaryDirectory();
       final imagePath =
           '${directory.path}/screenshot_${DateTime.now().millisecondsSinceEpoch}.png';
 
       await File(imagePath).writeAsBytes(byteData.buffer.asUint8List());
-      widget.onScreenshotTaken?.call(imagePath);
+
+      if (!_isDisposed) {
+        widget.onScreenshotTaken?.call(imagePath);
+      }
 
       return imagePath;
     } catch (e) {
       print('Screenshot error: $e');
-      return '';
+      throw Exception('Failed to take screenshot: $e');
     }
   }
 
   @override
   void didUpdateWidget(AutoSizeText oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.id != widget.id) {
+      if (oldWidget.id != null) {
+        AutoSizeTextScreenshotManager.unregisterWidget(oldWidget.id!);
+      }
+      if (widget.id != null) {
+        AutoSizeTextScreenshotManager.registerWidget(widget.id!, this);
+      }
+    }
 
     if (oldWidget.group != widget.group) {
       oldWidget.group?._remove(this);
@@ -540,6 +610,11 @@ class _AutoSizeTextState extends State<AutoSizeText> {
 
   @override
   void dispose() {
+    _isDisposed = true;
+    _readyTimer?.cancel();
+    if (widget.id != null) {
+      AutoSizeTextScreenshotManager.unregisterWidget(widget.id!);
+    }
     if (widget.group != null) {
       widget.group!._remove(this);
     }
